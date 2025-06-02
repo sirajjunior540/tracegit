@@ -1,5 +1,5 @@
 [package]
-name = "git2"
+name = "tracegit"
 version = "0.1.0"
 edition = "2024"
 

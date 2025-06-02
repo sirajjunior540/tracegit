@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use clap::Parser;
-use git2::{Commit, Object, ObjectType, Repository};
-use log::{debug, error, info, warn};
+use git2::{Commit, Repository};
+use log::{debug, info, warn};
 use std::path::PathBuf;
 use std::process::Command;
 
@@ -40,7 +40,7 @@ fn main() -> Result<()> {
     ))
     .init();
 
-    info!("Starting trace-working");
+    info!("Starting tracegit");
     debug!("Arguments: {:?}", args);
 
     // Save current HEAD to restore later if needed

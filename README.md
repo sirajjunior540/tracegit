@@ -18,17 +18,41 @@ Have you ever made changes to your code and suddenly found that a script or feat
 - Rust and Cargo (install from [rustup.rs](https://rustup.rs/))
 - Git (must be installed and available in your PATH)
 
+### Mac M4 (Apple Silicon) Considerations
+
+If you're using a Mac with Apple Silicon (M1, M2, M3, M4), you might need to ensure that your Rust toolchain is set up for the arm64 architecture:
+
+```bash
+# Check your current Rust target
+rustc --print target-list | grep aarch64
+
+# If needed, add the aarch64-apple-darwin target
+rustup target add aarch64-apple-darwin
+```
+
+You may also need to install the Xcode Command Line Tools:
+
+```bash
+xcode-select --install
+```
+
+If you encounter issues with the git2 dependency, make sure you have the required libraries:
+
+```bash
+brew install libgit2 openssl
+```
+
 ### Building from Source
 
 ```bash
 # Clone the repository
 git clone https://github.com/sirajjunior540/tracegit.git
-cd git-commit-tracer
+cd tracegit
 
 # Build the project
 cargo build --release
 
-# The binary will be available at target/release/git2
+# The binary will be available at target/release/tracegit
 ```
 
 ## Usage
@@ -36,7 +60,7 @@ cargo build --release
 Basic usage:
 
 ```bash
-git2 --file=path/to/your/script.py --cmd="python"
+tracegit --file=path/to/your/script.py --cmd="python"
 ```
 
 This will:
@@ -62,17 +86,17 @@ OPTIONS:
 
 Find when a Python script stopped working:
 ```bash
-git2 --file=scripts/analyze.py --cmd="python" --verbose
+tracegit --file=scripts/analyze.py --cmd="python" --verbose
 ```
 
 Find when a test started failing:
 ```bash
-git2 --file=tests/unit_test.js --cmd="npm test" --verbose
+tracegit --file=tests/unit_test.js --cmd="npm test" --verbose
 ```
 
 Check a specific repository:
 ```bash
-git2 --file=app.js --cmd="node" --repo-path=/path/to/repository
+tracegit --file=app.js --cmd="node" --repo-path=/path/to/repository
 ```
 
 ## How It Works
