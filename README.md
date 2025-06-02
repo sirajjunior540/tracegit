@@ -42,7 +42,20 @@ If you encounter issues with the git2 dependency, make sure you have the require
 brew install libgit2 openssl
 ```
 
-### Building from Source
+### Installation Options
+
+#### Installing from crates.io
+
+The easiest way to install tracegit is directly from crates.io:
+
+```bash
+# Install the latest version
+cargo install tracegit
+```
+
+This will install the binary to your Cargo bin directory (usually `~/.cargo/bin/`), which should be in your PATH.
+
+#### Building from Source
 
 ```bash
 # Clone the repository
@@ -53,6 +66,30 @@ cd tracegit
 cargo build --release
 
 # The binary will be available at target/release/tracegit
+# Optionally, install it to your PATH
+cargo install --path .
+```
+
+### Updating
+
+To update to the latest version:
+
+```bash
+# Update from crates.io
+cargo install tracegit --force
+```
+
+If you're seeing an old version (e.g., v0.1.0) after updating the repository, it's likely because:
+1. You're still using a previously installed binary
+2. The new version hasn't been published to crates.io yet
+3. Your cargo cache needs to be updated
+
+### Uninstalling
+
+To remove tracegit from your system:
+
+```bash
+cargo uninstall tracegit
 ```
 
 ## Usage
