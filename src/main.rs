@@ -14,8 +14,8 @@ struct Args {
     file: PathBuf,
 
     /// Command to run to check if the file works
-    #[clap(long, short = 'c')]
-    cmd: String,
+    #[clap(long, short = 'c', required_unless_present = "pytest")]
+    cmd: Option<String>,
 
     /// Path to the Git repository (defaults to current directory)
     #[clap(long, short = 'r', default_value = ".")]
@@ -113,7 +113,7 @@ fn main() -> Result<()> {
             format!("pytest {}", test_path)
         } else {
             // Use the command as provided
-            args.cmd.clone()
+            args.cmd.clone().expect("Command is required when not using --pytest")
         };
 
         // Check if this commit works
