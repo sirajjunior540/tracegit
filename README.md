@@ -78,6 +78,8 @@ OPTIONS:
     -r, --repo-path <REPO_PATH>  Path to the Git repository [default: .]
     -R, --restore <RESTORE>      Restore the working tree to the original state after completion [default: true]
     -v, --verbose                Enable verbose output
+    -p, --pytest                 Use pytest shorthand mode (automatically formats pytest command)
+    -t, --test <TEST>            Test name for pytest (class::method format, used with --pytest)
     -h, --help                   Print help information
     -V, --version                Print version information
 ```
@@ -97,6 +99,21 @@ tracegit --file=tests/unit_test.js --cmd="npm test" --verbose
 Find when a Python test started failing using pytest:
 ```bash
 tracegit --file=tests/test_feature.py --cmd="pytest" --verbose
+```
+
+Find when a specific pytest test started failing using the pytest shorthand mode:
+```bash
+tracegit --file=tests/test_feature.py --pytest --verbose
+```
+
+Find when a specific pytest test method started failing using the pytest shorthand mode:
+```bash
+tracegit --file=tests/test_feature.py --pytest --test="TestClass::test_method" --verbose
+```
+
+The above command is equivalent to:
+```bash
+tracegit --file=tests/test_feature.py --cmd="pytest tests/test_feature.py::TestClass::test_method" --verbose
 ```
 
 Check a specific repository:

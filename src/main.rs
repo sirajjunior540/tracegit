@@ -28,6 +28,14 @@ struct Args {
     /// Verbose output
     #[clap(long, short = 'v')]
     verbose: bool,
+
+    /// Use pytest shorthand mode (automatically formats pytest command)
+    #[clap(long, short = 'p')]
+    pytest: bool,
+
+    /// Test name for pytest (class::method format, used with --pytest)
+    #[clap(long, short = 't')]
+    test: Option<String>,
 }
 
 fn main() -> Result<()> {
@@ -92,8 +100,24 @@ fn main() -> Result<()> {
             continue;
         }
 
+        // Prepare command based on arguments
+        let effective_cmd = if args.pytest {
+            // If pytest mode is enabled, format the command appropriately
+            let test_path = if let Some(test) = &args.test {
+                // If test is specified, use it with the file path
+                format!("{}::{}", args.file.display(), test)
+            } else {
+                // Otherwise, just use the file path
+                args.file.display().to_string()
+            };
+            format!("pytest {}", test_path)
+        } else {
+            // Use the command as provided
+            args.cmd.clone()
+        };
+
         // Check if this commit works
-        if check_commit(&repo, &commit, &args.cmd, &args.file)? {
+        if check_commit(&repo, &commit, &effective_cmd, &args.file)? {
             info!("Found working commit: {}", commit.id());
             info!("Commit message: {}", commit.message().unwrap_or("No message"));
             info!("Commit date: {}", commit.time().seconds());
@@ -131,15 +155,21 @@ fn check_commit(repo: &Repository, commit: &Commit, cmd: &str, file_path: &PathB
         .with_context(|| format!("Failed to set HEAD to commit {}", commit.id()))?;
 
     // Run the command
-    // Check if the command already includes the file path
-    let file_str = file_path.to_string_lossy().to_string();
-    let effective_cmd = if cmd.contains(&file_str) {
-        // If the command already includes the file path, use it as is
+    // For commands that start with "pytest", assume the file path is already included
+    let effective_cmd = if cmd.starts_with("pytest ") {
+        // If it's a pytest command, use it as is (we've already formatted it correctly)
         cmd.to_string()
     } else {
-        // Otherwise, append the file path to the command
-        // This works for simple commands like "python" as well as testing frameworks like "pytest"
-        format!("{} {}", cmd, file_path.display())
+        // For other commands, check if the file path is already included
+        let file_str = file_path.to_string_lossy().to_string();
+        if cmd.contains(&file_str) {
+            // If the command already includes the file path, use it as is
+            cmd.to_string()
+        } else {
+            // Otherwise, append the file path to the command
+            // This works for simple commands like "python" as well as testing frameworks
+            format!("{} {}", cmd, file_path.display())
+        }
     };
 
     debug!("Running command: {}", effective_cmd);
