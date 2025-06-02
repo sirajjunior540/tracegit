@@ -75,12 +75,20 @@ fn main() -> Result<()> {
 
         debug!("Checking commit: {} ({})", commit.id(), commit.summary().unwrap_or("No summary"));
 
+        // Extract the actual file path for pytest-style paths (file::class::method)
+        let file_path_str = args.file.to_string_lossy().to_string();
+        let actual_file_path = if file_path_str.contains("::") {
+            PathBuf::from(file_path_str.split("::").next().unwrap())
+        } else {
+            args.file.clone()
+        };
+
         // Check if the file exists in this commit
-        let file_exists = repo.revparse_single(&format!("{}:{}", commit.id(), args.file.display()))
+        let file_exists = repo.revparse_single(&format!("{}:{}", commit.id(), actual_file_path.display()))
             .is_ok();
 
         if !file_exists {
-            debug!("File {:?} does not exist in commit {}", args.file, commit.id());
+            debug!("File {:?} does not exist in commit {}", actual_file_path, commit.id());
             continue;
         }
 
