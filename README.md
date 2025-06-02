@@ -94,6 +94,11 @@ Find when a test started failing:
 tracegit --file=tests/unit_test.js --cmd="npm test" --verbose
 ```
 
+Find when a Python test started failing using pytest:
+```bash
+tracegit --file=tests/test_feature.py --cmd="pytest" --verbose
+```
+
 Check a specific repository:
 ```bash
 tracegit --file=app.js --cmd="node" --repo-path=/path/to/repository

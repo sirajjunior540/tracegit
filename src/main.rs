@@ -126,9 +126,11 @@ fn check_commit(repo: &Repository, commit: &Commit, cmd: &str, file_path: &PathB
     // Check if the command already includes the file path
     let file_str = file_path.to_string_lossy().to_string();
     let effective_cmd = if cmd.contains(&file_str) {
+        // If the command already includes the file path, use it as is
         cmd.to_string()
     } else {
-        // Append the file path to the command if it's not already included
+        // Otherwise, append the file path to the command
+        // This works for simple commands like "python" as well as testing frameworks like "pytest"
         format!("{} {}", cmd, file_path.display())
     };
 
