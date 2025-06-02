@@ -7,14 +7,14 @@ use std::process::Command;
 
 /// A tool to trace the last Git commit where a specific script was working fine.
 #[derive(Parser, Debug)]
-#[clap(author, version, about)]
+#[clap(author, version = env!("CARGO_PKG_VERSION"), about)]
 struct Args {
     /// Path to the file to check
     #[clap(long, short = 'f')]
     file: PathBuf,
 
     /// Command to run to check if the file works
-    #[clap(long, short = 'c', required_unless_present = "pytest")]
+    #[clap(long, short = 'c')]
     cmd: Option<String>,
 
     /// Path to the Git repository (defaults to current directory)
@@ -41,6 +41,11 @@ struct Args {
 fn main() -> Result<()> {
     // Parse command line arguments
     let args = Args::parse();
+
+    // Validate that either --cmd or --pytest is provided
+    if args.cmd.is_none() && !args.pytest {
+        return Err(anyhow::anyhow!("Either --cmd or --pytest must be provided"));
+    }
 
     // Initialize logger
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or(
@@ -111,9 +116,12 @@ fn main() -> Result<()> {
                 args.file.display().to_string()
             };
             format!("pytest {}", test_path)
-        } else {
+        } else if let Some(cmd) = &args.cmd {
             // Use the command as provided
-            args.cmd.clone().expect("Command is required when not using --pytest")
+            cmd.clone()
+        } else {
+            // This should never happen due to the validation at the start of main()
+            unreachable!("Either --cmd or --pytest must be provided")
         };
 
         // Check if this commit works

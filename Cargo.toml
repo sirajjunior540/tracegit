@@ -1,7 +1,7 @@
 [package]
 name = "tracegit"
 authors = ["Abdallah Ahmed <sirajjunior@gmail.com>"]
-version = "0.2.0"
+version = "0.2.1"
 description = "A CLI tool to trace the last commit where a script was working fine"
 license = "MIT OR Apache-2.0"
 edition = "2024"
